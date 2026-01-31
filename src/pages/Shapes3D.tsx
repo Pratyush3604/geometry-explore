@@ -1,11 +1,9 @@
 import { Layout } from "@/components/layout/Layout";
 import { motion } from "framer-motion";
-import { Shape3DViewer } from "@/components/3d/Shape3DViewer";
-import { ArrowLeft, RotateCcw, Grid3X3 } from "lucide-react";
+import { ArrowLeft, RotateCcw, Grid3X3, Box, Hexagon, Triangle, Circle, Pentagon, Octagon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { Switch } from "@/components/ui/switch";
 
 const shapes3D = [
   {
@@ -15,6 +13,7 @@ const shapes3D = [
     formula: "V = s³, SA = 6s²",
     properties: ["6 faces", "12 edges", "8 vertices"],
     color: "#8b5cf6",
+    icon: Box,
   },
   {
     id: "sphere",
@@ -23,6 +22,7 @@ const shapes3D = [
     formula: "V = (4/3)πr³, SA = 4πr²",
     properties: ["No edges", "No vertices", "Infinite symmetry"],
     color: "#06b6d4",
+    icon: Circle,
   },
   {
     id: "cylinder",
@@ -31,6 +31,7 @@ const shapes3D = [
     formula: "V = πr²h, SA = 2πr(r + h)",
     properties: ["2 circular faces", "1 curved surface", "2 edges"],
     color: "#ec4899",
+    icon: Circle,
   },
   {
     id: "cone",
@@ -39,6 +40,7 @@ const shapes3D = [
     formula: "V = (1/3)πr²h",
     properties: ["1 circular base", "1 apex", "1 curved surface"],
     color: "#10b981",
+    icon: Triangle,
   },
   {
     id: "torus",
@@ -47,14 +49,7 @@ const shapes3D = [
     formula: "V = 2π²Rr²",
     properties: ["No edges", "Genus 1", "Ring shape"],
     color: "#8b5cf6",
-  },
-  {
-    id: "torusknot",
-    name: "Torus Knot",
-    description: "A mathematical knot that lies on the surface of a torus, creating intricate patterns.",
-    formula: "Complex parametric",
-    properties: ["Continuous curve", "Knotted", "Self-intersecting"],
-    color: "#f59e0b",
+    icon: Circle,
   },
   {
     id: "tetrahedron",
@@ -63,6 +58,7 @@ const shapes3D = [
     formula: "V = (a³√2)/12",
     properties: ["4 faces", "6 edges", "4 vertices"],
     color: "#06b6d4",
+    icon: Triangle,
   },
   {
     id: "octahedron",
@@ -71,6 +67,7 @@ const shapes3D = [
     formula: "V = (√2/3)a³",
     properties: ["8 faces", "12 edges", "6 vertices"],
     color: "#ec4899",
+    icon: Octagon,
   },
   {
     id: "dodecahedron",
@@ -79,6 +76,7 @@ const shapes3D = [
     formula: "V = (15 + 7√5)/4 × a³",
     properties: ["12 faces", "30 edges", "20 vertices"],
     color: "#10b981",
+    icon: Pentagon,
   },
   {
     id: "icosahedron",
@@ -87,14 +85,7 @@ const shapes3D = [
     formula: "V = (5(3 + √5)/12) × a³",
     properties: ["20 faces", "30 edges", "12 vertices"],
     color: "#8b5cf6",
-  },
-  {
-    id: "capsule",
-    name: "Capsule",
-    description: "A cylinder with hemispherical ends, commonly used in physics simulations.",
-    formula: "V = πr²(h + 4r/3)",
-    properties: ["2 hemispheres", "1 cylinder", "Smooth surface"],
-    color: "#f59e0b",
+    icon: Hexagon,
   },
   {
     id: "pyramid",
@@ -103,6 +94,7 @@ const shapes3D = [
     formula: "V = (1/3) × base × h",
     properties: ["1 square base", "4 triangular faces", "5 vertices"],
     color: "#06b6d4",
+    icon: Triangle,
   },
   {
     id: "prism",
@@ -111,14 +103,16 @@ const shapes3D = [
     formula: "V = (3√3/2)s²h",
     properties: ["2 hexagonal bases", "6 rectangular faces", "12 vertices"],
     color: "#ec4899",
+    icon: Hexagon,
   },
   {
-    id: "ring",
-    name: "Ring",
-    description: "A flat circular shape with a hole in the center, also called an annulus in 3D.",
-    formula: "A = π(R² - r²)",
-    properties: ["Flat surface", "Circular hole", "2D in 3D space"],
-    color: "#10b981",
+    id: "capsule",
+    name: "Capsule",
+    description: "A cylinder with hemispherical ends, commonly used in physics simulations.",
+    formula: "V = πr²(h + 4r/3)",
+    properties: ["2 hemispheres", "1 cylinder", "Smooth surface"],
+    color: "#f59e0b",
+    icon: Circle,
   },
 ];
 
@@ -135,9 +129,38 @@ const item = {
   show: { opacity: 1, scale: 1 },
 };
 
+// Animated 3D shape preview using CSS
+function Shape3DPreview({ shape, color }: { shape: string; color: string }) {
+  return (
+    <div className="w-full h-[300px] rounded-2xl overflow-hidden bg-muted/30 flex items-center justify-center">
+      <motion.div
+        className="relative"
+        animate={{ rotateY: 360 }}
+        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+        style={{ transformStyle: "preserve-3d", perspective: 800 }}
+      >
+        <div 
+          className="w-32 h-32 rounded-2xl flex items-center justify-center"
+          style={{ 
+            background: `linear-gradient(135deg, ${color}, ${color}88)`,
+            boxShadow: `0 20px 60px ${color}40`
+          }}
+        >
+          <span className="text-6xl text-white font-bold opacity-80">{shape[0]}</span>
+        </div>
+        <motion.div 
+          className="absolute inset-0 rounded-2xl border-2 opacity-30"
+          style={{ borderColor: color }}
+          animate={{ rotate: -360 }}
+          transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+        />
+      </motion.div>
+    </div>
+  );
+}
+
 const Shapes3D = () => {
   const [selectedShape, setSelectedShape] = useState(shapes3D[0]);
-  const [wireframe, setWireframe] = useState(false);
 
   return (
     <Layout>
@@ -157,47 +180,46 @@ const Shapes3D = () => {
             3D <span className="gradient-text">Shapes</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl">
-            Explore interactive 3D models - rotate, zoom, and examine every angle.
+            Explore the fascinating world of three-dimensional geometry.
           </p>
         </motion.div>
 
-        {/* Controls */}
+        {/* Controls hint */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="flex items-center gap-6 mb-8"
         >
-          <div className="flex items-center gap-3">
-            <Grid3X3 className="w-5 h-5 text-muted-foreground" />
-            <span className="text-sm font-medium">Wireframe</span>
-            <Switch checked={wireframe} onCheckedChange={setWireframe} />
-          </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <RotateCcw className="w-4 h-4" />
-            <span>Drag to rotate • Scroll to zoom</span>
+            <span>Animated 3D preview • Click to explore each shape</span>
           </div>
         </motion.div>
 
-        {/* Main 3D View */}
+        {/* Main View */}
         <motion.div
-          key={selectedShape.id + wireframe}
+          key={selectedShape.id}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           className="bg-card rounded-3xl border border-border p-8 mb-12"
         >
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             <div className="aspect-square max-h-[400px]">
-              <Shape3DViewer
-                shape={selectedShape.id}
-                color={selectedShape.color}
-                wireframe={wireframe}
-              />
+              <Shape3DPreview shape={selectedShape.name} color={selectedShape.color} />
             </div>
 
             <div>
-              <h2 className="text-3xl font-display font-bold mb-4">
-                {selectedShape.name}
-              </h2>
+              <div className="flex items-center gap-3 mb-4">
+                <div 
+                  className="w-12 h-12 rounded-xl flex items-center justify-center"
+                  style={{ backgroundColor: selectedShape.color }}
+                >
+                  <selectedShape.icon className="w-6 h-6 text-white" />
+                </div>
+                <h2 className="text-3xl font-display font-bold">
+                  {selectedShape.name}
+                </h2>
+              </div>
               <p className="text-lg text-muted-foreground mb-6">
                 {selectedShape.description}
               </p>
@@ -229,7 +251,7 @@ const Shapes3D = () => {
           variants={container}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4"
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
         >
           {shapes3D.map((shape) => (
             <motion.button
@@ -238,19 +260,19 @@ const Shapes3D = () => {
               onClick={() => setSelectedShape(shape)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`aspect-square p-3 rounded-2xl border transition-all flex flex-col items-center justify-center gap-2 ${
+              className={`aspect-square p-4 rounded-2xl border transition-all flex flex-col items-center justify-center gap-3 ${
                 selectedShape.id === shape.id
                   ? "bg-primary/10 border-primary"
                   : "bg-card border-border hover:border-primary/50"
               }`}
             >
               <div 
-                className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-xl font-bold"
+                className="w-12 h-12 rounded-xl flex items-center justify-center text-white"
                 style={{ backgroundColor: shape.color }}
               >
-                {shape.name[0]}
+                <shape.icon className="w-6 h-6" />
               </div>
-              <span className="text-xs font-medium truncate max-w-full">
+              <span className="text-sm font-medium truncate max-w-full">
                 {shape.name}
               </span>
             </motion.button>
