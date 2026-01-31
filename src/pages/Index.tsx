@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Box, Circle, Minus, Layers, Zap, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Shape3DViewer } from "@/components/3d/Shape3DViewer";
+import { Hero3DAnimation } from "@/components/3d/Hero3DAnimation";
 
 const stats = [
   { value: "80+", label: "Interactive Shapes", icon: Sparkles },
@@ -106,7 +106,7 @@ const Index = () => {
             >
               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-3xl blur-3xl" />
               <div className="relative">
-                <Shape3DViewer shape="torusknot" color="#8b5cf6" />
+                <Hero3DAnimation />
               </div>
             </motion.div>
           </div>
