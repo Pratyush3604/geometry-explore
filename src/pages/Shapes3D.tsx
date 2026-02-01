@@ -1,6 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { motion } from "framer-motion";
-import { ArrowLeft, RotateCcw, Grid3X3, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, RotateCcw, Grid3X3, Eye, EyeOff, Calculator, Box, Layers, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useState, Suspense, lazy } from "react";
@@ -8,50 +8,90 @@ import { useState, Suspense, lazy } from "react";
 // Lazy load the 3D viewer to prevent blocking
 const Shape3DViewer = lazy(() => import("@/components/3d/Shape3DViewer").then(m => ({ default: m.Shape3DViewer })));
 
-const shapes3D = [
+interface Shape3DData {
+  id: string;
+  name: string;
+  description: string;
+  volume: string;
+  surfaceArea: string;
+  faces?: string;
+  edges?: string;
+  vertices?: string;
+  eulerFormula?: string;
+  properties: string[];
+  color: string;
+  category: string;
+}
+
+const shapes3D: Shape3DData[] = [
   // Platonic Solids
   {
     id: "tetrahedron",
     name: "Tetrahedron",
-    description: "The simplest Platonic solid with four triangular faces, four vertices, and six edges.",
-    formula: "V = (a³√2)/12",
-    properties: ["4 faces", "6 edges", "4 vertices"],
+    description: "The simplest Platonic solid with four triangular faces. Every face is an equilateral triangle. The dual of itself.",
+    volume: "V = (a³√2)/12",
+    surfaceArea: "SA = √3 × a²",
+    faces: "4 triangles",
+    edges: "6",
+    vertices: "4",
+    eulerFormula: "4 - 6 + 4 = 2 ✓",
+    properties: ["Self-dual polyhedron", "Fire element (Plato)", "Minimum vertices for 3D", "Tetrahedral symmetry"],
     color: "#06b6d4",
     category: "platonic",
   },
   {
     id: "cube",
-    name: "Cube",
-    description: "A three-dimensional solid with six square faces, twelve edges, and eight vertices.",
-    formula: "V = s³, SA = 6s²",
-    properties: ["6 faces", "12 edges", "8 vertices"],
+    name: "Cube (Hexahedron)",
+    description: "A regular polyhedron with six square faces. The only Platonic solid that tessellates 3D space. Also called a hexahedron.",
+    volume: "V = s³",
+    surfaceArea: "SA = 6s²",
+    faces: "6 squares",
+    edges: "12",
+    vertices: "8",
+    eulerFormula: "6 - 12 + 8 = 2 ✓",
+    properties: ["Dual: Octahedron", "Earth element (Plato)", "Space-filling", "3 edges per vertex"],
     color: "#8b5cf6",
     category: "platonic",
   },
   {
     id: "octahedron",
     name: "Octahedron",
-    description: "A Platonic solid with eight equilateral triangular faces, like two pyramids joined at their bases.",
-    formula: "V = (√2/3)a³",
-    properties: ["8 faces", "12 edges", "6 vertices"],
+    description: "Eight equilateral triangular faces. Two square pyramids joined at their bases. Dual of the cube.",
+    volume: "V = (√2/3) × a³",
+    surfaceArea: "SA = 2√3 × a²",
+    faces: "8 triangles",
+    edges: "12",
+    vertices: "6",
+    eulerFormula: "8 - 12 + 6 = 2 ✓",
+    properties: ["Dual: Cube", "Air element (Plato)", "4 edges per vertex", "Fluorite crystal shape"],
     color: "#ec4899",
     category: "platonic",
   },
   {
     id: "dodecahedron",
     name: "Dodecahedron",
-    description: "A Platonic solid with twelve regular pentagonal faces.",
-    formula: "V = (15 + 7√5)/4 × a³",
-    properties: ["12 faces", "30 edges", "20 vertices"],
+    description: "Twelve regular pentagonal faces. Contains the golden ratio in its proportions. The shape of the universe (Plato).",
+    volume: "V = ((15 + 7√5)/4) × a³",
+    surfaceArea: "SA = 3√(25 + 10√5) × a²",
+    faces: "12 pentagons",
+    edges: "30",
+    vertices: "20",
+    eulerFormula: "12 - 30 + 20 = 2 ✓",
+    properties: ["Dual: Icosahedron", "Cosmos element (Plato)", "Golden ratio", "Pyritohedron crystal"],
     color: "#10b981",
     category: "platonic",
   },
   {
     id: "icosahedron",
     name: "Icosahedron",
-    description: "A Platonic solid with twenty equilateral triangular faces, appearing nearly spherical.",
-    formula: "V = (5(3 + √5)/12) × a³",
-    properties: ["20 faces", "30 edges", "12 vertices"],
+    description: "Twenty equilateral triangular faces. Appears nearly spherical. Used in virus structures and geodesic domes.",
+    volume: "V = (5(3 + √5)/12) × a³",
+    surfaceArea: "SA = 5√3 × a²",
+    faces: "20 triangles",
+    edges: "30",
+    vertices: "12",
+    eulerFormula: "20 - 30 + 12 = 2 ✓",
+    properties: ["Dual: Dodecahedron", "Water element (Plato)", "5 edges per vertex", "Virus capsids"],
     color: "#f59e0b",
     category: "platonic",
   },
@@ -60,63 +100,75 @@ const shapes3D = [
   {
     id: "sphere",
     name: "Sphere",
-    description: "A perfectly round 3D shape where every point on the surface is equidistant from the center.",
-    formula: "V = (4/3)πr³, SA = 4πr²",
-    properties: ["No edges", "No vertices", "Infinite symmetry"],
+    description: "Every point on the surface is equidistant from the center. Maximum volume for given surface area. Perfect symmetry.",
+    volume: "V = (4/3)πr³",
+    surfaceArea: "SA = 4πr²",
+    properties: ["Infinite symmetry", "No edges/vertices", "Minimum surface for volume", "Constant curvature"],
     color: "#06b6d4",
     category: "basic",
   },
   {
     id: "hemisphere",
     name: "Hemisphere",
-    description: "Half of a sphere, cut by a plane passing through its center.",
-    formula: "V = (2/3)πr³",
-    properties: ["One flat face", "One curved surface", "Circular base"],
+    description: "Half of a sphere, cut by a plane through its center. Common in architecture (domes) and astronomy.",
+    volume: "V = (2/3)πr³",
+    surfaceArea: "SA = 3πr² (curved + base)",
+    properties: ["One flat circular face", "One curved surface", "Dome shape", "Half of sphere volume"],
     color: "#8b5cf6",
     category: "basic",
   },
   {
     id: "ellipsoid",
     name: "Ellipsoid",
-    description: "A three-dimensional analog of an ellipse, like a stretched or compressed sphere.",
-    formula: "V = (4/3)πabc",
-    properties: ["Three axes", "No edges", "Smooth surface"],
+    description: "A sphere stretched along one or more axes. Earth is an oblate ellipsoid. Three semi-axes: a, b, c.",
+    volume: "V = (4/3)πabc",
+    surfaceArea: "SA ≈ complex formula",
+    properties: ["Three semi-axes", "Oblate/Prolate types", "Earth's shape", "Rugby ball shape"],
     color: "#ec4899",
     category: "basic",
   },
   {
     id: "cylinder",
     name: "Cylinder",
-    description: "A solid with two parallel circular bases connected by a curved surface.",
-    formula: "V = πr²h, SA = 2πr(r + h)",
-    properties: ["2 circular faces", "1 curved surface", "2 edges"],
+    description: "Two parallel circular bases connected by a curved surface. Common in cans, pipes, and columns.",
+    volume: "V = πr²h",
+    surfaceArea: "SA = 2πr(r + h)",
+    faces: "2 circles + 1 curved",
+    edges: "2 circular",
+    properties: ["Two parallel bases", "Constant cross-section", "Right or oblique", "Lateral area = 2πrh"],
     color: "#10b981",
     category: "basic",
   },
   {
     id: "cone",
     name: "Cone",
-    description: "A solid with a circular base that tapers smoothly to a point called the apex.",
-    formula: "V = (1/3)πr²h",
-    properties: ["1 circular base", "1 apex", "1 curved surface"],
+    description: "Circular base tapering to a point (apex). Ice cream cones, traffic cones, and volcanoes are examples.",
+    volume: "V = (1/3)πr²h",
+    surfaceArea: "SA = πr(r + l)",
+    faces: "1 circle + 1 curved",
+    edges: "1 circular",
+    vertices: "1 (apex)",
+    properties: ["One circular base", "Slant height l = √(r² + h²)", "1/3 of cylinder volume", "Conic sections"],
     color: "#f59e0b",
     category: "basic",
   },
   {
     id: "frustum",
     name: "Frustum",
-    description: "The portion of a cone or pyramid between two parallel cutting planes.",
-    formula: "V = (πh/3)(R² + Rr + r²)",
-    properties: ["Two circular faces", "Truncated cone", "Curved surface"],
+    description: "A cone or pyramid with the top cut off parallel to the base. Buckets and lampshades are frustums.",
+    volume: "V = (πh/3)(R² + Rr + r²)",
+    surfaceArea: "SA = π(R + r)l + πR² + πr²",
+    properties: ["Two circular faces", "Truncated cone", "Slant height formula", "Common in engineering"],
     color: "#8b5cf6",
     category: "basic",
   },
   {
     id: "capsule",
     name: "Capsule",
-    description: "A cylinder with hemispherical ends, commonly used in physics simulations.",
-    formula: "V = πr²(h + 4r/3)",
-    properties: ["2 hemispheres", "1 cylinder", "Smooth surface"],
+    description: "A cylinder with hemispherical ends. Used in pills, physics simulations, and stadium roofs.",
+    volume: "V = πr²h + (4/3)πr³",
+    surfaceArea: "SA = 2πrh + 4πr²",
+    properties: ["Cylinder + 2 hemispheres", "Smooth everywhere", "No edges", "Pill shape"],
     color: "#06b6d4",
     category: "basic",
   },
@@ -124,75 +176,107 @@ const shapes3D = [
   // Prisms
   {
     id: "cuboid",
-    name: "Cuboid",
-    description: "A rectangular prism with six rectangular faces. All angles are 90°.",
-    formula: "V = l × w × h",
-    properties: ["6 rectangular faces", "12 edges", "8 vertices"],
+    name: "Cuboid (Rectangular Prism)",
+    description: "Six rectangular faces with opposite faces equal. Books, bricks, and boxes are cuboids.",
+    volume: "V = l × w × h",
+    surfaceArea: "SA = 2(lw + wh + lh)",
+    faces: "6 rectangles",
+    edges: "12",
+    vertices: "8",
+    eulerFormula: "6 - 12 + 8 = 2 ✓",
+    properties: ["All angles 90°", "Opposite faces equal", "Space diagonal = √(l²+w²+h²)", "Box shape"],
     color: "#ec4899",
     category: "prisms",
   },
   {
     id: "triangular-prism",
     name: "Triangular Prism",
-    description: "A prism with triangular bases, featuring three rectangular lateral faces.",
-    formula: "V = (½bh) × l",
-    properties: ["2 triangular bases", "3 rectangular faces", "6 vertices"],
+    description: "A prism with triangular bases. Light splits into colors through a triangular prism (Newton).",
+    volume: "V = (½ × b × h) × l",
+    surfaceArea: "SA = bh + (a+b+c)l",
+    faces: "2 triangles + 3 rectangles",
+    edges: "9",
+    vertices: "6",
+    eulerFormula: "5 - 9 + 6 = 2 ✓",
+    properties: ["Triangular bases", "Light refraction", "Toblerone shape", "Tent shape"],
     color: "#10b981",
     category: "prisms",
   },
   {
     id: "pentagonal-prism",
     name: "Pentagonal Prism",
-    description: "A prism with pentagonal bases, featuring five rectangular lateral faces.",
-    formula: "V = (5s²tan(54°)/4) × h",
-    properties: ["2 pentagonal bases", "5 rectangular faces", "10 vertices"],
+    description: "A prism with pentagonal bases. Seven faces total: two pentagons and five rectangles.",
+    volume: "V = (¼√(5(5+2√5))s²) × h",
+    surfaceArea: "SA = 2A_base + 5sh",
+    faces: "2 pentagons + 5 rectangles",
+    edges: "15",
+    vertices: "10",
+    eulerFormula: "7 - 15 + 10 = 2 ✓",
+    properties: ["7 faces total", "Pentagon bases", "10 vertices", "15 edges"],
     color: "#f59e0b",
     category: "prisms",
   },
   {
     id: "prism",
     name: "Hexagonal Prism",
-    description: "A prism with hexagonal bases, featuring six rectangular lateral faces.",
-    formula: "V = (3√3/2)s²h",
-    properties: ["2 hexagonal bases", "6 rectangular faces", "12 vertices"],
+    description: "A prism with hexagonal bases. Pencils and some crystals have this shape. Eight faces total.",
+    volume: "V = (3√3/2)s²h",
+    surfaceArea: "SA = 3√3s² + 6sh",
+    faces: "2 hexagons + 6 rectangles",
+    edges: "18",
+    vertices: "12",
+    eulerFormula: "8 - 18 + 12 = 2 ✓",
+    properties: ["8 faces total", "Hexagon bases", "Pencil shape", "Honeycomb related"],
     color: "#8b5cf6",
     category: "prisms",
   },
   
-  // Special Shapes
+  // Pyramids & Special
   {
     id: "pyramid",
     name: "Square Pyramid",
-    description: "A polyhedron with a square base and four triangular faces meeting at an apex.",
-    formula: "V = (1/3) × base × h",
-    properties: ["1 square base", "4 triangular faces", "5 vertices"],
+    description: "A square base with four triangular faces meeting at an apex. The Great Pyramid of Giza is a famous example.",
+    volume: "V = (1/3) × s² × h",
+    surfaceArea: "SA = s² + 2sl",
+    faces: "1 square + 4 triangles",
+    edges: "8",
+    vertices: "5",
+    eulerFormula: "5 - 8 + 5 = 2 ✓",
+    properties: ["Giza pyramid shape", "Slant height l", "Square base", "Ancient architecture"],
     color: "#06b6d4",
     category: "special",
   },
   {
     id: "torus",
     name: "Torus",
-    description: "A doughnut-shaped surface generated by rotating a circle around an axis.",
-    formula: "V = 2π²Rr²",
-    properties: ["No edges", "Genus 1", "Ring shape"],
+    description: "A doughnut shape generated by rotating a circle around an external axis. Has genus 1 (one hole).",
+    volume: "V = 2π²Rr²",
+    surfaceArea: "SA = 4π²Rr",
+    properties: ["Donut shape", "Genus 1 (one hole)", "R = major radius", "r = minor radius"],
     color: "#ec4899",
     category: "special",
   },
   {
     id: "torus-knot",
     name: "Torus Knot",
-    description: "A knot that lies on the surface of a torus, creating intricate 3D curves.",
-    formula: "Complex parametric",
-    properties: ["Continuous curve", "No endpoints", "Knotted topology"],
+    description: "A mathematical knot lying on the surface of a torus. Creates beautiful intertwined 3D curves.",
+    volume: "Complex parametric",
+    surfaceArea: "Complex calculation",
+    properties: ["Continuous curve", "No endpoints", "Knotted topology", "Mathematical art"],
     color: "#10b981",
     category: "special",
   },
   {
     id: "rhombohedron",
     name: "Rhombohedron",
-    description: "A parallelepiped where all six faces are rhombi, like a sheared cube.",
-    formula: "V = a³√(1 - 3cos²α + 2cos³α)",
-    properties: ["6 rhombic faces", "12 edges", "8 vertices"],
+    description: "A parallelepiped where all six faces are congruent rhombi. Like a cube sheared in one direction.",
+    volume: "V = a³√(1-3cos²α+2cos³α)",
+    surfaceArea: "SA = 6a²sin(α)",
+    faces: "6 rhombi",
+    edges: "12",
+    vertices: "8",
+    eulerFormula: "6 - 12 + 8 = 2 ✓",
+    properties: ["Sheared cube", "All faces rhombi", "Calcite crystal", "3 pairs parallel faces"],
     color: "#f59e0b",
     category: "special",
   },
@@ -224,7 +308,7 @@ function LoadingPlaceholder() {
 }
 
 const Shapes3D = () => {
-  const [selectedShape, setSelectedShape] = useState(shapes3D[0]);
+  const [selectedShape, setSelectedShape] = useState<Shape3DData>(shapes3D[0]);
   const [wireframe, setWireframe] = useState(false);
 
   return (
@@ -245,7 +329,7 @@ const Shapes3D = () => {
             3D <span className="gradient-text">Shapes</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl">
-            Explore the fascinating world of three-dimensional geometry with interactive 3D models.
+            Explore the fascinating world of three-dimensional geometry with interactive 3D models and complete formulas.
           </p>
         </motion.div>
 
@@ -277,7 +361,7 @@ const Shapes3D = () => {
           animate={{ opacity: 1, scale: 1 }}
           className="bg-card rounded-3xl border border-border p-8 mb-12"
         >
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 items-start">
             <div className="aspect-square max-h-[400px]">
               <Suspense fallback={<LoadingPlaceholder />}>
                 <Shape3DViewer 
@@ -288,8 +372,8 @@ const Shapes3D = () => {
               </Suspense>
             </div>
 
-            <div>
-              <div className="flex items-center gap-3 mb-4">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
                 <div 
                   className="w-12 h-12 rounded-xl flex items-center justify-center"
                   style={{ backgroundColor: selectedShape.color }}
@@ -303,28 +387,120 @@ const Shapes3D = () => {
                   <span className="text-sm text-muted-foreground capitalize">{selectedShape.category}</span>
                 </div>
               </div>
-              <p className="text-lg text-muted-foreground mb-6">
+              <p className="text-lg text-muted-foreground">
                 {selectedShape.description}
               </p>
               
-              <div className="space-y-4">
+              {/* Volume & Surface Area */}
+              <div className="grid sm:grid-cols-2 gap-4">
                 <div className="p-4 bg-primary/5 rounded-xl border border-primary/20">
-                  <span className="text-sm text-muted-foreground">Formula</span>
-                  <p className="text-lg font-mono font-semibold text-primary mt-1">
-                    {selectedShape.formula}
+                  <div className="flex items-center gap-2 mb-2">
+                    <Box className="w-4 h-4 text-primary" />
+                    <span className="text-sm text-muted-foreground">Volume</span>
+                  </div>
+                  <p className="text-sm font-mono font-semibold text-primary">
+                    {selectedShape.volume}
                   </p>
                 </div>
                 <div className="p-4 bg-secondary/5 rounded-xl border border-secondary/20">
-                  <span className="text-sm text-muted-foreground">Properties</span>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {selectedShape.properties.map((prop, i) => (
-                      <span key={i} className="text-sm px-3 py-1 bg-secondary/20 rounded-full text-secondary">
-                        {prop}
-                      </span>
-                    ))}
+                  <div className="flex items-center gap-2 mb-2">
+                    <Layers className="w-4 h-4 text-secondary" />
+                    <span className="text-sm text-muted-foreground">Surface Area</span>
                   </div>
+                  <p className="text-sm font-mono font-semibold text-secondary">
+                    {selectedShape.surfaceArea}
+                  </p>
                 </div>
               </div>
+
+              {/* Topology Info */}
+              {(selectedShape.faces || selectedShape.edges || selectedShape.vertices) && (
+                <div className="grid grid-cols-3 gap-3">
+                  {selectedShape.faces && (
+                    <div className="p-3 bg-accent/10 rounded-lg border border-accent/20 text-center">
+                      <span className="text-xs text-muted-foreground block mb-1">Faces (F)</span>
+                      <span className="text-sm font-semibold">{selectedShape.faces}</span>
+                    </div>
+                  )}
+                  {selectedShape.edges && (
+                    <div className="p-3 bg-accent/10 rounded-lg border border-accent/20 text-center">
+                      <span className="text-xs text-muted-foreground block mb-1">Edges (E)</span>
+                      <span className="text-sm font-semibold">{selectedShape.edges}</span>
+                    </div>
+                  )}
+                  {selectedShape.vertices && (
+                    <div className="p-3 bg-accent/10 rounded-lg border border-accent/20 text-center">
+                      <span className="text-xs text-muted-foreground block mb-1">Vertices (V)</span>
+                      <span className="text-sm font-semibold">{selectedShape.vertices}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Euler's Formula */}
+              {selectedShape.eulerFormula && (
+                <div className="p-3 bg-success/10 rounded-lg border border-success/20">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Calculator className="w-4 h-4 text-success" />
+                    <span className="text-xs text-muted-foreground">Euler's Formula: V - E + F = 2</span>
+                  </div>
+                  <span className="text-sm font-mono font-semibold text-success">{selectedShape.eulerFormula}</span>
+                </div>
+              )}
+
+              {/* Properties */}
+              <div className="p-4 bg-muted/30 rounded-xl">
+                <div className="flex items-center gap-2 mb-3">
+                  <Info className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Key Properties</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {selectedShape.properties.map((prop, i) => (
+                    <span key={i} className="text-xs px-3 py-1.5 bg-background rounded-full border border-border">
+                      {prop}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* 3D Formulas Reference */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="bg-muted/30 rounded-2xl p-6 mb-8"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <Calculator className="w-5 h-5 text-primary" />
+            <h3 className="font-display font-bold text-lg">Key 3D Geometry Concepts</h3>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+            <div className="p-3 bg-background rounded-lg">
+              <span className="text-muted-foreground block mb-1">Euler's Polyhedron Formula</span>
+              <span className="font-mono font-semibold text-primary">V - E + F = 2</span>
+            </div>
+            <div className="p-3 bg-background rounded-lg">
+              <span className="text-muted-foreground block mb-1">Platonic Solids</span>
+              <span className="font-mono font-semibold text-primary">Only 5 exist</span>
+            </div>
+            <div className="p-3 bg-background rounded-lg">
+              <span className="text-muted-foreground block mb-1">Prism Volume</span>
+              <span className="font-mono font-semibold text-secondary">V = Base Area × Height</span>
+            </div>
+            <div className="p-3 bg-background rounded-lg">
+              <span className="text-muted-foreground block mb-1">Pyramid/Cone Volume</span>
+              <span className="font-mono font-semibold text-secondary">V = ⅓ × Base × Height</span>
+            </div>
+            <div className="p-3 bg-background rounded-lg">
+              <span className="text-muted-foreground block mb-1">Sphere Volume</span>
+              <span className="font-mono font-semibold text-secondary">V = (4/3)πr³</span>
+            </div>
+            <div className="p-3 bg-background rounded-lg">
+              <span className="text-muted-foreground block mb-1">Sphere Surface Area</span>
+              <span className="font-mono font-semibold text-secondary">SA = 4πr²</span>
             </div>
           </div>
         </motion.div>
