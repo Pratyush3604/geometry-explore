@@ -13,9 +13,29 @@ const navItems = [
 
 export function Navbar() {
   const location = useLocation();
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem("geomaster-dark-mode");
+    if (saved !== null) {
+      return JSON.parse(saved);
+    }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  // Apply dark mode on mount (handles initial page load)
+  useEffect(() => {
+    const saved = localStorage.getItem("geomaster-dark-mode");
+    if (saved !== null) {
+      const shouldBeDark = JSON.parse(saved);
+      if (shouldBeDark) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    }
+  }, []);
 
   useEffect(() => {
+    localStorage.setItem("geomaster-dark-mode", JSON.stringify(isDark));
     if (isDark) {
       document.documentElement.classList.add("dark");
     } else {
