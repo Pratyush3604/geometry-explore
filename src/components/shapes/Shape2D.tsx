@@ -39,6 +39,21 @@ export function Shape2D({
         const h = radius * 1.5;
         return <polygon points={`${center},${center - h * 0.5} ${center + h * 0.5},${center + h * 0.4} ${center - h * 0.5},${center + h * 0.4}`} />;
       
+      case "isosceles":
+        return <polygon points={`${center},${size * 0.1} ${size * 0.8},${size * 0.85} ${size * 0.2},${size * 0.85}`} />;
+      
+      case "scalene":
+        return <polygon points={`${size * 0.3},${size * 0.15} ${size * 0.9},${size * 0.7} ${size * 0.1},${size * 0.85}`} />;
+      
+      case "right-triangle":
+        return <polygon points={`${size * 0.15},${size * 0.15} ${size * 0.15},${size * 0.85} ${size * 0.85},${size * 0.85}`} />;
+      
+      case "obtuse-triangle":
+        return <polygon points={`${size * 0.1},${size * 0.75} ${size * 0.5},${size * 0.15} ${size * 0.95},${size * 0.85}`} />;
+      
+      case "acute-triangle":
+        return <polygon points={`${center},${size * 0.12} ${size * 0.82},${size * 0.82} ${size * 0.18},${size * 0.82}`} />;
+      
       case "pentagon":
         return <polygon points={createPolygonPoints(5, center, radius * 0.8)} />;
       
@@ -57,6 +72,12 @@ export function Shape2D({
       case "decagon":
         return <polygon points={createPolygonPoints(10, center, radius * 0.85)} />;
       
+      case "hendecagon":
+        return <polygon points={createPolygonPoints(11, center, radius * 0.8)} />;
+      
+      case "dodecagon":
+        return <polygon points={createPolygonPoints(12, center, radius * 0.85)} />;
+      
       case "rhombus":
         return <polygon points={`${center},${size * 0.1} ${size * 0.85},${center} ${center},${size * 0.9} ${size * 0.15},${center}`} />;
       
@@ -66,17 +87,33 @@ export function Shape2D({
       case "trapezoid":
         return <polygon points={`${size * 0.1},${size * 0.75} ${size * 0.3},${size * 0.25} ${size * 0.7},${size * 0.25} ${size * 0.9},${size * 0.75}`} />;
       
+      case "kite":
+        return <polygon points={`${center},${size * 0.05} ${size * 0.75},${size * 0.4} ${center},${size * 0.95} ${size * 0.25},${size * 0.4}`} />;
+      
       case "star":
         return <polygon points={createStarPoints(5, center, radius * 0.85, radius * 0.4)} />;
       
       case "star6":
         return <polygon points={createStarPoints(6, center, radius * 0.85, radius * 0.5)} />;
       
+      case "star8":
+        return <polygon points={createStarPoints(8, center, radius * 0.85, radius * 0.5)} />;
+      
       case "ellipse":
         return <ellipse cx={center} cy={center} rx={radius * 0.9} ry={radius * 0.6} />;
       
       case "semicircle":
         return <path d={`M ${size * 0.1},${center} A ${radius * 0.8},${radius * 0.8} 0 0 1 ${size * 0.9},${center} Z`} />;
+      
+      case "quarter-circle":
+        return <path d={`M ${size * 0.15},${size * 0.85} L ${size * 0.15},${size * 0.15} A ${size * 0.7},${size * 0.7} 0 0 1 ${size * 0.85},${size * 0.85} Z`} />;
+      
+      case "annulus":
+        return (
+          <>
+            <circle cx={center} cy={center} r={radius * 0.85} fill="none" stroke={color} strokeWidth={radius * 0.3} />
+          </>
+        );
       
       case "arrow":
         return <polygon points={`${size * 0.5},${size * 0.1} ${size * 0.85},${size * 0.5} ${size * 0.65},${size * 0.5} ${size * 0.65},${size * 0.85} ${size * 0.35},${size * 0.85} ${size * 0.35},${size * 0.5} ${size * 0.15},${size * 0.5}`} />;
@@ -89,6 +126,13 @@ export function Shape2D({
           <path d={`M ${center} ${size * 0.85}
             C ${size * 0.1} ${size * 0.5} ${size * 0.1} ${size * 0.2} ${center} ${size * 0.35}
             C ${size * 0.9} ${size * 0.2} ${size * 0.9} ${size * 0.5} ${center} ${size * 0.85} Z`} />
+        );
+      
+      case "crescent":
+        return (
+          <path d={`M ${size * 0.7},${size * 0.15} 
+            A ${radius * 0.7},${radius * 0.7} 0 1 0 ${size * 0.7},${size * 0.85}
+            A ${radius * 0.5},${radius * 0.5} 0 1 1 ${size * 0.7},${size * 0.15}`} />
         );
       
       default:

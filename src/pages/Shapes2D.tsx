@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 
 const shapes2D = [
+  // Circles & Curves
   {
     id: "circle",
     name: "Circle",
@@ -14,6 +15,7 @@ const shapes2D = [
     formula: "Area = πr², Circumference = 2πr",
     properties: ["No sides", "No vertices", "360° total"],
     color: "hsl(259 85% 65%)",
+    category: "curves",
   },
   {
     id: "ellipse",
@@ -22,6 +24,7 @@ const shapes2D = [
     formula: "Area = πab",
     properties: ["Two axes", "Two foci", "Smooth curve"],
     color: "hsl(330 85% 65%)",
+    category: "curves",
   },
   {
     id: "semicircle",
@@ -30,14 +33,45 @@ const shapes2D = [
     formula: "Area = ½πr²",
     properties: ["One curved edge", "One straight edge", "180° arc"],
     color: "hsl(195 90% 55%)",
+    category: "curves",
   },
   {
-    id: "triangle",
-    name: "Triangle",
-    description: "A three-sided polygon. The simplest polygon with interior angles summing to 180°.",
-    formula: "Area = ½ × base × height",
-    properties: ["3 sides", "3 vertices", "Interior angles = 180°"],
+    id: "quarter-circle",
+    name: "Quarter Circle",
+    description: "One quarter of a circle, bounded by two radii and a 90° arc.",
+    formula: "Area = ¼πr²",
+    properties: ["90° arc", "Two straight edges", "One vertex"],
     color: "hsl(160 70% 45%)",
+    category: "curves",
+  },
+  {
+    id: "annulus",
+    name: "Annulus (Ring)",
+    description: "The region between two concentric circles.",
+    formula: "Area = π(R² - r²)",
+    properties: ["Two circular boundaries", "Donut shape", "No vertices"],
+    color: "hsl(35 90% 55%)",
+    category: "curves",
+  },
+  {
+    id: "crescent",
+    name: "Crescent",
+    description: "A curved shape formed by two circular arcs, resembling a moon phase.",
+    formula: "Complex area formula",
+    properties: ["Two curved edges", "Two cusps", "Asymmetric"],
+    color: "hsl(259 85% 65%)",
+    category: "curves",
+  },
+  
+  // Triangles
+  {
+    id: "triangle",
+    name: "Scalene Triangle",
+    description: "A triangle with all three sides of different lengths and all angles different.",
+    formula: "Area = ½ × base × height",
+    properties: ["3 sides", "3 vertices", "No equal sides"],
+    color: "hsl(160 70% 45%)",
+    category: "triangles",
   },
   {
     id: "equilateral",
@@ -46,7 +80,46 @@ const shapes2D = [
     formula: "Area = (√3/4) × a²",
     properties: ["3 equal sides", "3 equal angles (60°)", "Perfect symmetry"],
     color: "hsl(259 85% 65%)",
+    category: "triangles",
   },
+  {
+    id: "isosceles",
+    name: "Isosceles Triangle",
+    description: "A triangle with two sides of equal length and two equal base angles.",
+    formula: "Area = ½ × base × height",
+    properties: ["2 equal sides", "2 equal angles", "Line of symmetry"],
+    color: "hsl(195 90% 55%)",
+    category: "triangles",
+  },
+  {
+    id: "right-triangle",
+    name: "Right Triangle",
+    description: "A triangle with one 90° angle. Forms the basis of trigonometry.",
+    formula: "a² + b² = c² (Pythagorean)",
+    properties: ["One 90° angle", "Hypotenuse", "Two legs"],
+    color: "hsl(330 85% 65%)",
+    category: "triangles",
+  },
+  {
+    id: "obtuse-triangle",
+    name: "Obtuse Triangle",
+    description: "A triangle with one angle greater than 90°.",
+    formula: "Area = ½ × base × height",
+    properties: ["One obtuse angle", "Two acute angles", "3 vertices"],
+    color: "hsl(35 90% 55%)",
+    category: "triangles",
+  },
+  {
+    id: "acute-triangle",
+    name: "Acute Triangle",
+    description: "A triangle where all three angles are less than 90°.",
+    formula: "Area = ½ × base × height",
+    properties: ["All angles < 90°", "3 acute angles", "3 vertices"],
+    color: "hsl(160 70% 45%)",
+    category: "triangles",
+  },
+  
+  // Quadrilaterals
   {
     id: "square",
     name: "Square",
@@ -54,6 +127,7 @@ const shapes2D = [
     formula: "Area = s², Perimeter = 4s",
     properties: ["4 equal sides", "4 right angles (90°)", "4-fold symmetry"],
     color: "hsl(195 90% 55%)",
+    category: "quadrilaterals",
   },
   {
     id: "rectangle",
@@ -62,6 +136,7 @@ const shapes2D = [
     formula: "Area = l × w, Perimeter = 2(l + w)",
     properties: ["4 sides", "4 right angles", "Opposite sides equal"],
     color: "hsl(330 85% 65%)",
+    category: "quadrilaterals",
   },
   {
     id: "rhombus",
@@ -70,6 +145,7 @@ const shapes2D = [
     formula: "Area = ½ × d₁ × d₂",
     properties: ["4 equal sides", "Opposite angles equal", "Diagonals bisect at 90°"],
     color: "hsl(160 70% 45%)",
+    category: "quadrilaterals",
   },
   {
     id: "parallelogram",
@@ -78,6 +154,7 @@ const shapes2D = [
     formula: "Area = base × height",
     properties: ["Opposite sides parallel", "Opposite angles equal", "Diagonals bisect each other"],
     color: "hsl(259 85% 65%)",
+    category: "quadrilaterals",
   },
   {
     id: "trapezoid",
@@ -86,7 +163,19 @@ const shapes2D = [
     formula: "Area = ½(a + b) × h",
     properties: ["One pair parallel sides", "4 vertices", "Variable angles"],
     color: "hsl(195 90% 55%)",
+    category: "quadrilaterals",
   },
+  {
+    id: "kite",
+    name: "Kite",
+    description: "A quadrilateral with two pairs of adjacent sides that are equal.",
+    formula: "Area = ½ × d₁ × d₂",
+    properties: ["2 pairs equal adjacent sides", "One line of symmetry", "Perpendicular diagonals"],
+    color: "hsl(35 90% 55%)",
+    category: "quadrilaterals",
+  },
+  
+  // Regular Polygons (3-12 sides)
   {
     id: "pentagon",
     name: "Pentagon",
@@ -94,6 +183,7 @@ const shapes2D = [
     formula: "Area = ¼√(5(5+2√5)) × s²",
     properties: ["5 sides", "5 vertices", "Interior angles = 540°"],
     color: "hsl(330 85% 65%)",
+    category: "polygons",
   },
   {
     id: "hexagon",
@@ -102,6 +192,7 @@ const shapes2D = [
     formula: "Area = (3√3/2) × s²",
     properties: ["6 sides", "6 vertices", "Interior angles = 720°"],
     color: "hsl(160 70% 45%)",
+    category: "polygons",
   },
   {
     id: "heptagon",
@@ -110,6 +201,7 @@ const shapes2D = [
     formula: "Interior angle = 128.57° (regular)",
     properties: ["7 sides", "7 vertices", "Interior angles = 900°"],
     color: "hsl(259 85% 65%)",
+    category: "polygons",
   },
   {
     id: "octagon",
@@ -118,6 +210,7 @@ const shapes2D = [
     formula: "Area = 2(1 + √2) × s²",
     properties: ["8 sides", "8 vertices", "Interior angles = 1080°"],
     color: "hsl(195 90% 55%)",
+    category: "polygons",
   },
   {
     id: "nonagon",
@@ -126,6 +219,7 @@ const shapes2D = [
     formula: "Interior angle = 140° (regular)",
     properties: ["9 sides", "9 vertices", "Interior angles = 1260°"],
     color: "hsl(330 85% 65%)",
+    category: "polygons",
   },
   {
     id: "decagon",
@@ -134,7 +228,28 @@ const shapes2D = [
     formula: "Interior angle = 144° (regular)",
     properties: ["10 sides", "10 vertices", "Interior angles = 1440°"],
     color: "hsl(160 70% 45%)",
+    category: "polygons",
   },
+  {
+    id: "hendecagon",
+    name: "Hendecagon",
+    description: "An eleven-sided polygon with each interior angle measuring 147.27°.",
+    formula: "Interior angle = 147.27° (regular)",
+    properties: ["11 sides", "11 vertices", "Interior angles = 1620°"],
+    color: "hsl(35 90% 55%)",
+    category: "polygons",
+  },
+  {
+    id: "dodecagon",
+    name: "Dodecagon",
+    description: "A twelve-sided polygon with each interior angle measuring 150°.",
+    formula: "Interior angle = 150° (regular)",
+    properties: ["12 sides", "12 vertices", "Interior angles = 1800°"],
+    color: "hsl(259 85% 65%)",
+    category: "polygons",
+  },
+  
+  // Stars & Special Shapes
   {
     id: "star",
     name: "5-Point Star",
@@ -142,6 +257,7 @@ const shapes2D = [
     formula: "Point angle = 36°",
     properties: ["5 points", "10 edges", "Non-convex"],
     color: "hsl(259 85% 65%)",
+    category: "special",
   },
   {
     id: "star6",
@@ -150,6 +266,16 @@ const shapes2D = [
     formula: "Also called Star of David",
     properties: ["6 points", "12 edges", "Two triangles"],
     color: "hsl(195 90% 55%)",
+    category: "special",
+  },
+  {
+    id: "star8",
+    name: "8-Point Star",
+    description: "An octagram formed by two overlapping squares.",
+    formula: "Two rotated squares",
+    properties: ["8 points", "16 edges", "High symmetry"],
+    color: "hsl(330 85% 65%)",
+    category: "special",
   },
   {
     id: "arrow",
@@ -157,7 +283,8 @@ const shapes2D = [
     description: "A directional shape commonly used to indicate movement or direction.",
     formula: "Composite shape",
     properties: ["7 vertices", "Directional", "Asymmetric"],
-    color: "hsl(330 85% 65%)",
+    color: "hsl(160 70% 45%)",
+    category: "special",
   },
   {
     id: "cross",
@@ -165,7 +292,8 @@ const shapes2D = [
     description: "A shape with four arms extending from a central point.",
     formula: "12 vertices",
     properties: ["4-fold symmetry", "12 edges", "Convex"],
-    color: "hsl(160 70% 45%)",
+    color: "hsl(35 90% 55%)",
+    category: "special",
   },
   {
     id: "heart",
@@ -174,6 +302,7 @@ const shapes2D = [
     formula: "Curved composite",
     properties: ["Symmetric", "Curved edges", "One vertex"],
     color: "hsl(330 85% 65%)",
+    category: "special",
   },
 ];
 
