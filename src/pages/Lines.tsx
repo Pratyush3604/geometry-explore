@@ -57,6 +57,13 @@ const linesConcepts = [
     color: "#8b5cf6",
   },
   {
+    id: "transversal",
+    name: "Transversal",
+    description: "A line that intersects two or more lines at distinct points.",
+    formula: "Creates 8 angles",
+    color: "#10b981",
+  },
+  {
     id: "angle-acute",
     name: "Acute Angle",
     description: "An angle measuring less than 90 degrees.",
@@ -78,6 +85,55 @@ const linesConcepts = [
     color: "#8b5cf6",
   },
   {
+    id: "angle-straight",
+    name: "Straight Angle",
+    description: "An angle measuring exactly 180 degrees, forming a straight line.",
+    formula: "θ = 180°",
+    color: "#f59e0b",
+  },
+  {
+    id: "angle-reflex",
+    name: "Reflex Angle",
+    description: "An angle measuring more than 180 but less than 360 degrees.",
+    formula: "180° < θ < 360°",
+    color: "#ef4444",
+  },
+  {
+    id: "complementary",
+    name: "Complementary Angles",
+    description: "Two angles whose measures sum to 90 degrees.",
+    formula: "∠A + ∠B = 90°",
+    color: "#06b6d4",
+  },
+  {
+    id: "supplementary",
+    name: "Supplementary Angles",
+    description: "Two angles whose measures sum to 180 degrees.",
+    formula: "∠A + ∠B = 180°",
+    color: "#ec4899",
+  },
+  {
+    id: "vertical",
+    name: "Vertical Angles",
+    description: "Two non-adjacent angles formed by intersecting lines. They are always equal.",
+    formula: "∠1 = ∠3, ∠2 = ∠4",
+    color: "#8b5cf6",
+  },
+  {
+    id: "corresponding",
+    name: "Corresponding Angles",
+    description: "Angles in the same position at each intersection when a transversal crosses parallel lines.",
+    formula: "∠1 = ∠5 (if parallel)",
+    color: "#10b981",
+  },
+  {
+    id: "alternate-interior",
+    name: "Alternate Interior",
+    description: "Angles on opposite sides of a transversal, between the parallel lines.",
+    formula: "∠3 = ∠6 (if parallel)",
+    color: "#f59e0b",
+  },
+  {
     id: "midpoint",
     name: "Midpoint",
     description: "The point that divides a line segment into two equal parts.",
@@ -90,6 +146,13 @@ const linesConcepts = [
     description: "A ray that divides an angle into two equal parts.",
     formula: "∠BAD = ∠DAC",
     color: "#8b5cf6",
+  },
+  {
+    id: "perpendicular-bisector",
+    name: "Perpendicular Bisector",
+    description: "A line that passes through the midpoint of a segment at 90 degrees.",
+    formula: "Passes through M, ⊥ to AB",
+    color: "#ec4899",
   },
 ];
 
