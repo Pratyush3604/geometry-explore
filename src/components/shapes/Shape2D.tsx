@@ -99,6 +99,12 @@ export function Shape2D({
       case "star8":
         return <polygon points={createStarPoints(8, center, radius * 0.85, radius * 0.5)} />;
       
+      case "star10":
+        return <polygon points={createStarPoints(10, center, radius * 0.85, radius * 0.5)} />;
+      
+      case "star12":
+        return <polygon points={createStarPoints(12, center, radius * 0.85, radius * 0.55)} />;
+      
       case "ellipse":
         return <ellipse cx={center} cy={center} rx={radius * 0.9} ry={radius * 0.6} />;
       
@@ -133,6 +139,99 @@ export function Shape2D({
           <path d={`M ${size * 0.7},${size * 0.15} 
             A ${radius * 0.7},${radius * 0.7} 0 1 0 ${size * 0.7},${size * 0.85}
             A ${radius * 0.5},${radius * 0.5} 0 1 1 ${size * 0.7},${size * 0.15}`} />
+        );
+      
+      case "lens":
+        return (
+          <path d={`M ${size * 0.5},${size * 0.15} 
+            A ${radius * 0.7},${radius * 0.7} 0 0 1 ${size * 0.5},${size * 0.85}
+            A ${radius * 0.7},${radius * 0.7} 0 0 1 ${size * 0.5},${size * 0.15}`} />
+        );
+      
+      case "sector":
+        return (
+          <path d={`M ${center},${center} L ${center},${size * 0.1} A ${radius * 0.8},${radius * 0.8} 0 0 1 ${size * 0.85},${center} Z`} />
+        );
+      
+      case "segment":
+        return (
+          <path d={`M ${size * 0.15},${center} A ${radius * 0.7},${radius * 0.7} 0 0 1 ${size * 0.85},${center} L ${size * 0.15},${center}`} />
+        );
+      
+      case "arbelos":
+        return (
+          <>
+            <path d={`M ${size * 0.1},${center} A ${radius * 0.8},${radius * 0.8} 0 0 1 ${size * 0.9},${center}`} fill="none" stroke={color} strokeWidth={strokeWidth} />
+            <path d={`M ${size * 0.1},${center} A ${radius * 0.4},${radius * 0.4} 0 0 0 ${size * 0.5},${center}`} fill="none" stroke={color} strokeWidth={strokeWidth} />
+            <path d={`M ${size * 0.5},${center} A ${radius * 0.4},${radius * 0.4} 0 0 0 ${size * 0.9},${center}`} fill="none" stroke={color} strokeWidth={strokeWidth} />
+          </>
+        );
+      
+      case "isosceles-right":
+        return <polygon points={`${size * 0.15},${size * 0.85} ${size * 0.15},${size * 0.15} ${size * 0.85},${size * 0.85}`} />;
+      
+      case "30-60-90":
+        return <polygon points={`${size * 0.1},${size * 0.85} ${size * 0.1},${size * 0.15} ${size * 0.9},${size * 0.85}`} />;
+      
+      case "isosceles-trapezoid":
+        return <polygon points={`${size * 0.1},${size * 0.75} ${size * 0.25},${size * 0.25} ${size * 0.75},${size * 0.25} ${size * 0.9},${size * 0.75}`} />;
+      
+      case "right-trapezoid":
+        return <polygon points={`${size * 0.1},${size * 0.75} ${size * 0.1},${size * 0.25} ${size * 0.7},${size * 0.25} ${size * 0.9},${size * 0.75}`} />;
+      
+      case "dart":
+        return <polygon points={`${center},${size * 0.05} ${size * 0.8},${size * 0.5} ${center},${size * 0.4} ${size * 0.2},${size * 0.5}`} />;
+      
+      case "tridecagon":
+        return <polygon points={createPolygonPoints(13, center, radius * 0.8)} />;
+      
+      case "tetradecagon":
+        return <polygon points={createPolygonPoints(14, center, radius * 0.8)} />;
+      
+      case "pentadecagon":
+        return <polygon points={createPolygonPoints(15, center, radius * 0.8)} />;
+      
+      case "hexadecagon":
+        return <polygon points={createPolygonPoints(16, center, radius * 0.8)} />;
+      
+      case "trefoil":
+        return (
+          <>
+            <circle cx={center} cy={size * 0.35} r={radius * 0.35} />
+            <circle cx={size * 0.3} cy={size * 0.65} r={radius * 0.35} />
+            <circle cx={size * 0.7} cy={size * 0.65} r={radius * 0.35} />
+          </>
+        );
+      
+      case "quatrefoil":
+        return (
+          <>
+            <circle cx={center} cy={size * 0.28} r={radius * 0.3} />
+            <circle cx={center} cy={size * 0.72} r={radius * 0.3} />
+            <circle cx={size * 0.28} cy={center} r={radius * 0.3} />
+            <circle cx={size * 0.72} cy={center} r={radius * 0.3} />
+          </>
+        );
+      
+      case "spiral":
+        return (
+          <path d={`M ${center},${center} 
+            Q ${center + 10},${center - 10} ${center + 15},${center}
+            Q ${center + 20},${center + 15} ${center},${center + 20}
+            Q ${center - 25},${center + 25} ${center - 30},${center}
+            Q ${center - 35},${center - 35} ${center},${center - 40}
+            Q ${center + 45},${center - 45} ${center + 50},${center}`} 
+            fill="none" stroke={color} strokeWidth={strokeWidth} />
+        );
+      
+      case "golden-spiral":
+        return (
+          <path d={`M ${size * 0.85},${size * 0.5}
+            A ${size * 0.35},${size * 0.35} 0 0 1 ${size * 0.5},${size * 0.85}
+            A ${size * 0.22},${size * 0.22} 0 0 1 ${size * 0.28},${size * 0.63}
+            A ${size * 0.14},${size * 0.14} 0 0 1 ${size * 0.42},${size * 0.5}
+            A ${size * 0.08},${size * 0.08} 0 0 1 ${size * 0.5},${size * 0.58}`}
+            fill="none" stroke={color} strokeWidth={strokeWidth} />
         );
       
       default:

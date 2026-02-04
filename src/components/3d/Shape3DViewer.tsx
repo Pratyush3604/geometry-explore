@@ -107,6 +107,38 @@ function ShapeMesh({ shape, color, wireframe = false }: { shape: string; color: 
           </mesh>
         );
       
+      case "triangular-pyramid":
+        return (
+          <mesh>
+            <tetrahedronGeometry args={[1.5]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "pentagonal-pyramid":
+        return (
+          <mesh>
+            <coneGeometry args={[1.2, 1.8, 5]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "hexagonal-pyramid":
+        return (
+          <mesh>
+            <coneGeometry args={[1.2, 1.8, 6]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "octagonal-pyramid":
+        return (
+          <mesh>
+            <coneGeometry args={[1.2, 1.8, 8]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
       case "prism":
         return (
           <mesh rotation={[Math.PI / 2, 0, 0]}>
@@ -123,10 +155,82 @@ function ShapeMesh({ shape, color, wireframe = false }: { shape: string; color: 
           </mesh>
         );
       
+      case "square-prism":
+        return (
+          <mesh>
+            <boxGeometry args={[1.4, 2.2, 1.4]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
       case "pentagonal-prism":
         return (
           <mesh rotation={[Math.PI / 2, 0, 0]}>
             <cylinderGeometry args={[1, 1, 1.8, 5]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "heptagonal-prism":
+        return (
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[1, 1, 1.8, 7]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "octagonal-prism":
+        return (
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[1, 1, 1.8, 8]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "decagonal-prism":
+        return (
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[1, 1, 1.8, 10]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "dodecagonal-prism":
+        return (
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[1, 1, 1.8, 12]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "square-antiprism":
+        return (
+          <mesh rotation={[Math.PI / 2, Math.PI / 8, 0]}>
+            <cylinderGeometry args={[1, 1, 1.5, 4, 1, false]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "pentagonal-antiprism":
+        return (
+          <mesh rotation={[Math.PI / 2, Math.PI / 10, 0]}>
+            <cylinderGeometry args={[1, 1, 1.5, 5, 1, false]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "hexagonal-antiprism":
+        return (
+          <mesh rotation={[Math.PI / 2, Math.PI / 12, 0]}>
+            <cylinderGeometry args={[1, 1, 1.5, 6, 1, false]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "octagonal-antiprism":
+        return (
+          <mesh rotation={[Math.PI / 2, Math.PI / 16, 0]}>
+            <cylinderGeometry args={[1, 1, 1.5, 8, 1, false]} />
             <meshStandardMaterial {...materialProps} />
           </mesh>
         );
@@ -155,6 +259,30 @@ function ShapeMesh({ shape, color, wireframe = false }: { shape: string; color: 
           </mesh>
         );
       
+      case "ovoid":
+        return (
+          <mesh scale={[1, 1.3, 1]}>
+            <sphereGeometry args={[1, 64, 64]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "paraboloid":
+        return (
+          <mesh rotation={[Math.PI, 0, 0]}>
+            <coneGeometry args={[1.2, 2, 64, 1, true]} />
+            <meshStandardMaterial {...materialProps} side={THREE.DoubleSide} />
+          </mesh>
+        );
+      
+      case "hyperboloid":
+        return (
+          <mesh>
+            <cylinderGeometry args={[0.6, 1.2, 2, 32, 1, true]} />
+            <meshStandardMaterial {...materialProps} side={THREE.DoubleSide} />
+          </mesh>
+        );
+      
       case "cuboid":
         return (
           <mesh>
@@ -176,6 +304,68 @@ function ShapeMesh({ shape, color, wireframe = false }: { shape: string; color: 
         rhombGeo.applyMatrix4(new THREE.Matrix4().makeShear(0.3, 0, 0, 0.3, 0, 0));
         return (
           <mesh geometry={rhombGeo}>
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "stellated-octahedron":
+        return (
+          <group>
+            <mesh>
+              <tetrahedronGeometry args={[1.3]} />
+              <meshStandardMaterial {...materialProps} />
+            </mesh>
+            <mesh rotation={[0, 0, Math.PI]}>
+              <tetrahedronGeometry args={[1.3]} />
+              <meshStandardMaterial {...materialProps} />
+            </mesh>
+          </group>
+        );
+      
+      case "truncated-cube":
+        return (
+          <mesh>
+            <boxGeometry args={[1.6, 1.6, 1.6]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "cuboctahedron":
+        return (
+          <mesh>
+            <icosahedronGeometry args={[1.3, 0]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "truncated-tetrahedron":
+        return (
+          <mesh>
+            <tetrahedronGeometry args={[1.4, 1]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "rhombicuboctahedron":
+        return (
+          <mesh>
+            <icosahedronGeometry args={[1.4, 1]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "snub-cube":
+        return (
+          <mesh>
+            <dodecahedronGeometry args={[1.3, 1]} />
+            <meshStandardMaterial {...materialProps} />
+          </mesh>
+        );
+      
+      case "icosidodecahedron":
+        return (
+          <mesh>
+            <icosahedronGeometry args={[1.4, 1]} />
             <meshStandardMaterial {...materialProps} />
           </mesh>
         );
