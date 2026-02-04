@@ -121,6 +121,49 @@ export function LineVisualization({
           </>
         );
       
+      case "collinear":
+        return (
+          <>
+            <line x1="15" y1={size / 2} x2={size - 15} y2={size / 2} stroke={color} strokeWidth={strokeWidth} />
+            <motion.circle cx={size * 0.25} cy={size / 2} r="5" fill="hsl(160 70% 45%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2 }} />
+            <motion.circle cx={size / 2} cy={size / 2} r="5" fill="hsl(160 70% 45%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 }} />
+            <motion.circle cx={size * 0.75} cy={size / 2} r="5" fill="hsl(160 70% 45%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.4 }} />
+            <motion.text x={size * 0.25} y={size / 2 - 12} fill="hsl(160 70% 45%)" fontSize="10" textAnchor="middle" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>A</motion.text>
+            <motion.text x={size / 2} y={size / 2 - 12} fill="hsl(160 70% 45%)" fontSize="10" textAnchor="middle" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>B</motion.text>
+            <motion.text x={size * 0.75} y={size / 2 - 12} fill="hsl(160 70% 45%)" fontSize="10" textAnchor="middle" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>C</motion.text>
+          </>
+        );
+      
+      case "coplanar":
+        return (
+          <>
+            <rect x="20" y="30" width={size - 40} height={size - 60} fill="hsl(259 85% 65% / 0.1)" stroke={color} strokeWidth="1" strokeDasharray="4 4" />
+            <motion.circle cx={size * 0.3} cy={size * 0.4} r="5" fill="hsl(195 90% 55%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2 }} />
+            <motion.circle cx={size * 0.7} cy={size * 0.35} r="5" fill="hsl(195 90% 55%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 }} />
+            <motion.circle cx={size * 0.5} cy={size * 0.65} r="5" fill="hsl(195 90% 55%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.4 }} />
+            <motion.circle cx={size * 0.35} cy={size * 0.7} r="5" fill="hsl(195 90% 55%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.5 }} />
+          </>
+        );
+      
+      case "skew":
+        return (
+          <>
+            <line x1="15" y1={size * 0.3} x2={size - 15} y2={size * 0.4} stroke={color} strokeWidth={strokeWidth} />
+            <line x1="30" y1={size * 0.6} x2={size - 30} y2={size * 0.75} stroke="hsl(330 85% 65%)" strokeWidth={strokeWidth} />
+            <motion.text x={size / 2} y={size * 0.52} fill="hsl(var(--foreground))" fontSize="9" textAnchor="middle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>3D</motion.text>
+          </>
+        );
+      
+      case "concurrent":
+        return (
+          <>
+            <line x1="15" y1="20" x2={size / 2} y2={size / 2} stroke={color} strokeWidth={strokeWidth} />
+            <line x1={size - 15} y1="20" x2={size / 2} y2={size / 2} stroke="hsl(195 90% 55%)" strokeWidth={strokeWidth} />
+            <line x1={size / 2} y1={size - 15} x2={size / 2} y2={size / 2} stroke="hsl(160 70% 45%)" strokeWidth={strokeWidth} />
+            <motion.circle cx={size / 2} cy={size / 2} r="6" fill="hsl(330 85% 65%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.4 }} />
+          </>
+        );
+      
       case "bisector":
         return (
           <>
@@ -160,6 +203,26 @@ export function LineVisualization({
             <line x1="25" y1={size - 30} x2={size * 0.5} y2="20" stroke={color} strokeWidth={strokeWidth} />
             <path d={`M 55,${size - 30} A 30,30 0 1,1 40,${size - 55}`} fill="none" stroke="hsl(0 75% 55%)" strokeWidth="2" />
             <motion.text x={size * 0.7} y={size / 2} fill="hsl(0 75% 55%)" fontSize="10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>270°</motion.text>
+          </>
+        );
+      
+      case "angle-full":
+        return (
+          <>
+            <line x1={size / 2} y1={size / 2} x2={size - 20} y2={size / 2} stroke={color} strokeWidth={strokeWidth} />
+            <circle cx={size / 2} cy={size / 2} r="4" fill={color} />
+            <circle cx={size / 2} cy={size / 2} r="35" fill="none" stroke="hsl(195 90% 55%)" strokeWidth="2" />
+            <motion.text x={size / 2} y={size / 2 - 45} fill="hsl(195 90% 55%)" fontSize="11" textAnchor="middle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>360°</motion.text>
+          </>
+        );
+      
+      case "angle-zero":
+        return (
+          <>
+            <line x1={size * 0.2} y1={size / 2} x2={size - 20} y2={size / 2} stroke={color} strokeWidth={strokeWidth} />
+            <line x1={size * 0.2} y1={size / 2} x2={size - 25} y2={size / 2 + 3} stroke="hsl(160 70% 45%)" strokeWidth={strokeWidth} />
+            <circle cx={size * 0.2} cy={size / 2} r="5" fill={color} />
+            <motion.text x={size / 2} y={size / 2 - 15} fill="hsl(var(--foreground))" fontSize="11" textAnchor="middle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>0°</motion.text>
           </>
         );
       
@@ -220,6 +283,49 @@ export function LineVisualization({
           </>
         );
       
+      case "alternate-exterior":
+        return (
+          <>
+            <line x1="10" y1={size * 0.35} x2={size - 10} y2={size * 0.35} stroke={color} strokeWidth={strokeWidth} />
+            <line x1="10" y1={size * 0.65} x2={size - 10} y2={size * 0.65} stroke={color} strokeWidth={strokeWidth} />
+            <line x1={size * 0.3} y1="5" x2={size * 0.7} y2={size - 5} stroke="hsl(259 85% 65%)" strokeWidth={strokeWidth} />
+            <path d={`M ${size * 0.38},${size * 0.35} A 10,10 0 0,0 ${size * 0.35},${size * 0.35 - 10}`} fill="hsl(259 85% 65% / 0.3)" stroke="hsl(259 85% 65%)" strokeWidth="1.5" />
+            <path d={`M ${size * 0.62},${size * 0.65} A 10,10 0 0,1 ${size * 0.65},${size * 0.65 + 10}`} fill="hsl(259 85% 65% / 0.3)" stroke="hsl(259 85% 65%)" strokeWidth="1.5" />
+          </>
+        );
+      
+      case "co-interior":
+        return (
+          <>
+            <line x1="10" y1={size * 0.3} x2={size - 10} y2={size * 0.3} stroke={color} strokeWidth={strokeWidth} />
+            <line x1="10" y1={size * 0.7} x2={size - 10} y2={size * 0.7} stroke={color} strokeWidth={strokeWidth} />
+            <line x1={size * 0.3} y1="5" x2={size * 0.7} y2={size - 5} stroke="hsl(330 85% 65%)" strokeWidth={strokeWidth} />
+            <path d={`M ${size * 0.45},${size * 0.3} A 12,12 0 0,1 ${size * 0.45 + 10},${size * 0.3 + 10}`} fill="hsl(330 85% 65% / 0.3)" stroke="hsl(330 85% 65%)" strokeWidth="1.5" />
+            <path d={`M ${size * 0.57},${size * 0.7} A 12,12 0 0,0 ${size * 0.54},${size * 0.7 - 12}`} fill="hsl(330 85% 65% / 0.3)" stroke="hsl(330 85% 65%)" strokeWidth="1.5" />
+          </>
+        );
+      
+      case "linear-pair":
+        return (
+          <>
+            <line x1="15" y1={size / 2} x2={size - 15} y2={size / 2} stroke={color} strokeWidth={strokeWidth} />
+            <line x1={size / 2} y1={size / 2} x2={size / 2} y2="20" stroke="hsl(195 90% 55%)" strokeWidth={strokeWidth} />
+            <path d={`M ${size / 2 - 20},${size / 2} A 20,20 0 0,0 ${size / 2},${size / 2 - 20}`} fill="hsl(259 85% 65% / 0.2)" stroke="hsl(259 85% 65%)" strokeWidth="1.5" />
+            <path d={`M ${size / 2 + 20},${size / 2} A 20,20 0 0,1 ${size / 2},${size / 2 - 20}`} fill="hsl(195 90% 55% / 0.2)" stroke="hsl(195 90% 55%)" strokeWidth="1.5" />
+          </>
+        );
+      
+      case "adjacent":
+        return (
+          <>
+            <line x1="25" y1={size - 25} x2={size - 25} y2={size - 25} stroke={color} strokeWidth={strokeWidth} />
+            <line x1="25" y1={size - 25} x2={size * 0.55} y2="20" stroke={color} strokeWidth={strokeWidth} />
+            <line x1="25" y1={size - 25} x2="25" y2="30" stroke="hsl(195 90% 55%)" strokeWidth={strokeWidth} />
+            <path d={`M 45,${size - 25} A 20,20 0 0,0 38,${size - 42}`} fill="hsl(259 85% 65% / 0.2)" stroke="hsl(259 85% 65%)" strokeWidth="1.5" />
+            <path d={`M 25,${size - 45} A 20,20 0 0,0 40,${size - 40}`} fill="hsl(195 90% 55% / 0.2)" stroke="hsl(195 90% 55%)" strokeWidth="1.5" />
+          </>
+        );
+      
       case "perpendicular-bisector":
         return (
           <>
@@ -229,6 +335,93 @@ export function LineVisualization({
             <circle cx={size - 20} cy={size / 2} r="4" fill={color} />
             <motion.circle cx={size / 2} cy={size / 2} r="5" fill="hsl(330 85% 65%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 }} />
             <rect x={size / 2} y={size / 2} width="10" height="10" fill="none" stroke="hsl(160 70% 45%)" strokeWidth="1.5" />
+          </>
+        );
+      
+      case "altitude":
+        return (
+          <>
+            <polygon points={`25,${size - 25} ${size - 25},${size - 25} ${size * 0.6},25`} fill="none" stroke={color} strokeWidth={strokeWidth} />
+            <line x1={size * 0.6} y1="25" x2={size * 0.6} y2={size - 25} stroke="hsl(160 70% 45%)" strokeWidth="2" strokeDasharray="5 3" />
+            <rect x={size * 0.6} y={size - 35} width="10" height="10" fill="none" stroke="hsl(160 70% 45%)" strokeWidth="1.5" />
+            <motion.text x={size * 0.6 + 15} y={size / 2} fill="hsl(160 70% 45%)" fontSize="10" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>h</motion.text>
+          </>
+        );
+      
+      case "median":
+        return (
+          <>
+            <polygon points={`25,${size - 25} ${size - 25},${size - 25} ${size * 0.5},25`} fill="none" stroke={color} strokeWidth={strokeWidth} />
+            <line x1={size * 0.5} y1="25" x2={size / 2} y2={size - 25} stroke="hsl(195 90% 55%)" strokeWidth="2" strokeDasharray="5 3" />
+            <motion.circle cx={size / 2} cy={size - 25} r="4" fill="hsl(195 90% 55%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 }} />
+            <motion.text x={size / 2 + 8} y={size - 20} fill="hsl(195 90% 55%)" fontSize="9" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>M</motion.text>
+          </>
+        );
+      
+      case "tangent":
+        return (
+          <>
+            <circle cx={size / 2} cy={size / 2} r="40" fill="none" stroke={color} strokeWidth={strokeWidth} />
+            <line x1="15" y1={size / 2 + 40} x2={size - 15} y2={size / 2 + 40} stroke="hsl(160 70% 45%)" strokeWidth={strokeWidth} />
+            <motion.circle cx={size / 2} cy={size / 2 + 40} r="4" fill="hsl(160 70% 45%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 }} />
+            <line x1={size / 2} y1={size / 2} x2={size / 2} y2={size / 2 + 40} stroke={color} strokeWidth="1" strokeDasharray="3 3" />
+          </>
+        );
+      
+      case "secant":
+        return (
+          <>
+            <circle cx={size / 2} cy={size / 2} r="40" fill="none" stroke={color} strokeWidth={strokeWidth} />
+            <line x1="10" y1={size * 0.35} x2={size - 10} y2={size * 0.65} stroke="hsl(259 85% 65%)" strokeWidth={strokeWidth} />
+            <motion.circle cx={size * 0.3} cy={size * 0.44} r="4" fill="hsl(259 85% 65%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 }} />
+            <motion.circle cx={size * 0.7} cy={size * 0.56} r="4" fill="hsl(259 85% 65%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.4 }} />
+          </>
+        );
+      
+      case "chord":
+        return (
+          <>
+            <circle cx={size / 2} cy={size / 2} r="45" fill="none" stroke={color} strokeWidth={strokeWidth} />
+            <line x1={size * 0.2} y1={size / 2} x2={size * 0.8} y2={size / 2} stroke="hsl(330 85% 65%)" strokeWidth={strokeWidth} />
+            <motion.circle cx={size * 0.2} cy={size / 2} r="4" fill="hsl(330 85% 65%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 }} />
+            <motion.circle cx={size * 0.8} cy={size / 2} r="4" fill="hsl(330 85% 65%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.4 }} />
+          </>
+        );
+      
+      case "diameter":
+        return (
+          <>
+            <circle cx={size / 2} cy={size / 2} r="45" fill="none" stroke={color} strokeWidth={strokeWidth} />
+            <line x1={size / 2 - 45} y1={size / 2} x2={size / 2 + 45} y2={size / 2} stroke="hsl(35 90% 55%)" strokeWidth={strokeWidth} />
+            <motion.circle cx={size / 2} cy={size / 2} r="4" fill="hsl(35 90% 55%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 }} />
+            <motion.text x={size / 2} y={size / 2 - 10} fill="hsl(35 90% 55%)" fontSize="10" textAnchor="middle" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>d</motion.text>
+          </>
+        );
+      
+      case "radius":
+        return (
+          <>
+            <circle cx={size / 2} cy={size / 2} r="45" fill="none" stroke={color} strokeWidth={strokeWidth} />
+            <line x1={size / 2} y1={size / 2} x2={size / 2 + 45} y2={size / 2} stroke="hsl(195 90% 55%)" strokeWidth={strokeWidth} />
+            <motion.circle cx={size / 2} cy={size / 2} r="4" fill="hsl(195 90% 55%)" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 }} />
+            <motion.text x={size / 2 + 25} y={size / 2 - 8} fill="hsl(195 90% 55%)" fontSize="10" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>r</motion.text>
+          </>
+        );
+      
+      case "asymptote":
+        return (
+          <>
+            <line x1="15" y1={size / 2} x2={size - 15} y2={size / 2} stroke={color} strokeWidth="1" strokeDasharray="5 3" />
+            <path d={`M 20,${size - 20} Q ${size / 2},${size / 2 + 5} ${size - 20},${size / 2 + 2}`} fill="none" stroke="hsl(259 85% 65%)" strokeWidth={strokeWidth} />
+            <motion.text x={size - 30} y={size / 2 - 10} fill={color} fontSize="9" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>asymptote</motion.text>
+          </>
+        );
+      
+      case "axis-symmetry":
+        return (
+          <>
+            <path d={`M ${size / 2},20 Q ${size * 0.3},${size / 2} ${size / 2},${size - 20} Q ${size * 0.7},${size / 2} ${size / 2},20`} fill="hsl(259 85% 65% / 0.2)" stroke={color} strokeWidth={strokeWidth} />
+            <line x1={size / 2} y1="15" x2={size / 2} y2={size - 15} stroke="hsl(330 85% 65%)" strokeWidth="2" strokeDasharray="6 3" />
           </>
         );
       
