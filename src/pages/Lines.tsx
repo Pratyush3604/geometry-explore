@@ -1,10 +1,15 @@
 import { Layout } from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import { LineVisualization } from "@/components/shapes/LineVisualization";
-import { ArrowLeft, ArrowRight, Info, BookOpen } from "lucide-react";
+import { ArrowLeft, ArrowRight, Info, BookOpen, Brain, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { SearchBar } from "@/components/features/SearchBar";
+import { ProgressStats } from "@/components/features/ProgressStats";
+import { ShapeActions } from "@/components/features/ShapeActions";
+import { QuizMode } from "@/components/features/QuizMode";
+import { useGeometryProgress } from "@/hooks/useGeometryProgress";
 
 interface LineConcept {
   id: string;
@@ -453,10 +458,44 @@ const item = {
 const Lines = () => {
   const [selectedConcept, setSelectedConcept] = useState<LineConcept>(linesConcepts[0]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [filterMode, setFilterMode] = useState<"all" | "learned" | "favorites">("all");
 
-  const filteredConcepts = activeCategory 
-    ? linesConcepts.filter(c => c.category === activeCategory)
-    : linesConcepts;
+  const { toggleLearned, toggleFavorite, isLearned, isFavorite, learnedCount, favoritesCount } = useGeometryProgress();
+
+  const filteredConcepts = useMemo(() => {
+    let concepts = linesConcepts;
+    
+    if (activeCategory) {
+      concepts = concepts.filter(c => c.category === activeCategory);
+    }
+    
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      concepts = concepts.filter(c => 
+        c.name.toLowerCase().includes(query) ||
+        c.description.toLowerCase().includes(query) ||
+        c.properties.some(p => p.toLowerCase().includes(query))
+      );
+    }
+
+    if (filterMode === "learned") {
+      concepts = concepts.filter(c => isLearned(`line-${c.id}`));
+    } else if (filterMode === "favorites") {
+      concepts = concepts.filter(c => isFavorite(`line-${c.id}`));
+    }
+    
+    return concepts;
+  }, [activeCategory, searchQuery, filterMode, isLearned, isFavorite]);
+
+  const quizItems = linesConcepts.map(c => ({
+    id: c.id,
+    name: c.name,
+    properties: c.properties,
+    category: c.category,
+    formula: c.formula,
+  }));
 
   return (
     <Layout>
@@ -465,46 +504,102 @@ const Lines = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
+          className="mb-8"
         >
           <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             Back to Home
           </Link>
           
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
-            Lines & <span className="gradient-text">Angles</span>
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl">
-            Master the fundamentals of geometry with interactive visualizations 
-            of lines, rays, segments, and all types of angles.
-          </p>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-display font-bold mb-2">
+                Lines & <span className="gradient-text">Angles</span>
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-2xl">
+                Master the fundamentals of geometry with interactive visualizations.
+              </p>
+            </div>
+            <Button onClick={() => setShowQuiz(true)} className="gap-2 shrink-0">
+              <Brain className="w-4 h-4" />
+              Start Quiz
+            </Button>
+          </div>
+
+          <ProgressStats 
+            learnedCount={learnedCount} 
+            favoritesCount={favoritesCount} 
+            totalCount={linesConcepts.length} 
+          />
         </motion.div>
 
-        {/* Category Filter */}
+        {/* Search and Filter */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex flex-wrap gap-2 mb-8"
+          className="space-y-4 mb-8"
         >
-          <Button
-            variant={activeCategory === null ? "default" : "outline"}
-            size="sm"
-            onClick={() => setActiveCategory(null)}
-          >
-            All
-          </Button>
-          {categories.map((cat) => (
-            <Button
-              key={cat.id}
-              variant={activeCategory === cat.id ? "default" : "outline"}
-              size="sm"
-              onClick={() => setActiveCategory(cat.id)}
-            >
-              {cat.name}
-            </Button>
-          ))}
+          <SearchBar 
+            value={searchQuery} 
+            onChange={setSearchQuery} 
+            placeholder="Search concepts..." 
+          />
+          
+          <div className="flex flex-wrap items-center gap-4 justify-center">
+            <div className="flex gap-2">
+              <Button
+                variant={filterMode === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterMode("all")}
+              >
+                All
+              </Button>
+              <Button
+                variant={filterMode === "learned" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterMode("learned")}
+              >
+                Learned
+              </Button>
+              <Button
+                variant={filterMode === "favorites" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterMode("favorites")}
+              >
+                Favorites
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <Filter className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground mr-2">Category:</span>
+              <Button
+                variant={activeCategory === null ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setActiveCategory(null)}
+              >
+                All
+              </Button>
+              {categories.map((cat) => (
+                <Button
+                  key={cat.id}
+                  variant={activeCategory === cat.id ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => setActiveCategory(cat.id)}
+                >
+                  {cat.name}
+                </Button>
+              ))}
+            </div>
+          </div>
         </motion.div>
+
+        <QuizMode 
+          open={showQuiz} 
+          onOpenChange={setShowQuiz} 
+          items={quizItems} 
+          type="lines" 
+        />
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Concept List */}
@@ -514,7 +609,11 @@ const Lines = () => {
             animate="show"
             className="lg:col-span-1 space-y-3 max-h-[600px] overflow-y-auto pr-2"
           >
-            {filteredConcepts.map((concept) => (
+            {filteredConcepts.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No concepts found matching your criteria.
+              </div>
+            ) : filteredConcepts.map((concept) => (
               <motion.button
                 key={concept.id}
                 variants={item}
@@ -525,13 +624,21 @@ const Lines = () => {
                     : "bg-card border-border hover:border-primary/50"
                 }`}
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className={`font-semibold ${selectedConcept.id === concept.id ? "text-primary" : ""}`}>
-                    {concept.name}
-                  </h3>
-                  <span className="text-xs px-2 py-0.5 bg-muted rounded-full text-muted-foreground capitalize">
-                    {concept.category.replace("-", " ")}
-                  </span>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className={`font-semibold ${selectedConcept.id === concept.id ? "text-primary" : ""}`}>
+                      {concept.name}
+                    </h3>
+                    <span className="text-xs px-2 py-0.5 bg-muted rounded-full text-muted-foreground capitalize">
+                      {concept.category.replace("-", " ")}
+                    </span>
+                  </div>
+                  <ShapeActions
+                    isLearned={isLearned(`line-${concept.id}`)}
+                    isFavorite={isFavorite(`line-${concept.id}`)}
+                    onToggleLearned={() => toggleLearned(`line-${concept.id}`)}
+                    onToggleFavorite={() => toggleFavorite(`line-${concept.id}`)}
+                  />
                 </div>
                 <p className="text-sm text-muted-foreground line-clamp-2">{concept.description}</p>
               </motion.button>

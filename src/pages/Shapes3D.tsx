@@ -1,9 +1,15 @@
 import { Layout } from "@/components/layout/Layout";
 import { motion } from "framer-motion";
-import { ArrowLeft, RotateCcw, Grid3X3, Eye, EyeOff, Calculator, Box, Layers, Info } from "lucide-react";
+import { ArrowLeft, RotateCcw, Grid3X3, Eye, EyeOff, Calculator, Box, Layers, Info, Brain, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { useState, Suspense, lazy } from "react";
+import { useState, Suspense, lazy, useMemo } from "react";
+import { SearchBar } from "@/components/features/SearchBar";
+import { ProgressStats } from "@/components/features/ProgressStats";
+import { ShapeActions } from "@/components/features/ShapeActions";
+import { QuizMode } from "@/components/features/QuizMode";
+import { FormulaCalculator } from "@/components/features/FormulaCalculator";
+import { useGeometryProgress } from "@/hooks/useGeometryProgress";
 
 // Lazy load the 3D viewer to prevent blocking
 const Shape3DViewer = lazy(() => import("@/components/3d/Shape3DViewer").then(m => ({ default: m.Shape3DViewer })));
@@ -620,9 +626,64 @@ function LoadingPlaceholder() {
   );
 }
 
+const categories3D = [
+  { id: "platonic", name: "Platonic Solids" },
+  { id: "basic", name: "Basic Solids" },
+  { id: "prisms", name: "Prisms" },
+  { id: "pyramids", name: "Pyramids" },
+  { id: "antiprisms", name: "Antiprisms" },
+  { id: "special", name: "Special" },
+];
+
 const Shapes3D = () => {
   const [selectedShape, setSelectedShape] = useState<Shape3DData>(shapes3D[0]);
   const [wireframe, setWireframe] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [showCalculator, setShowCalculator] = useState(false);
+  const [calculatorShape, setCalculatorShape] = useState<string>("");
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [filterMode, setFilterMode] = useState<"all" | "learned" | "favorites">("all");
+
+  const { toggleLearned, toggleFavorite, isLearned, isFavorite, learnedCount, favoritesCount } = useGeometryProgress();
+
+  const filteredShapes = useMemo(() => {
+    let shapes = shapes3D;
+    
+    if (activeCategory) {
+      shapes = shapes.filter(s => s.category === activeCategory);
+    }
+    
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      shapes = shapes.filter(s => 
+        s.name.toLowerCase().includes(query) ||
+        s.description.toLowerCase().includes(query) ||
+        s.properties.some(p => p.toLowerCase().includes(query))
+      );
+    }
+
+    if (filterMode === "learned") {
+      shapes = shapes.filter(s => isLearned(`3d-${s.id}`));
+    } else if (filterMode === "favorites") {
+      shapes = shapes.filter(s => isFavorite(`3d-${s.id}`));
+    }
+    
+    return shapes;
+  }, [activeCategory, searchQuery, filterMode, isLearned, isFavorite]);
+
+  const quizItems = shapes3D.map(s => ({
+    id: s.id,
+    name: s.name,
+    properties: s.properties,
+    category: s.category,
+    formula: s.volume,
+  }));
+
+  const openCalculator = (shapeName: string) => {
+    setCalculatorShape(shapeName);
+    setShowCalculator(true);
+  };
 
   return (
     <Layout>
@@ -631,41 +692,132 @@ const Shapes3D = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
+          className="mb-8"
         >
           <Link to="/shapes-2d" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             Back to 2D Shapes
           </Link>
           
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
-            3D <span className="gradient-text">Shapes</span>
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl">
-            Explore the fascinating world of three-dimensional geometry with interactive 3D models and complete formulas.
-          </p>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-display font-bold mb-2">
+                3D <span className="gradient-text">Shapes</span>
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-2xl">
+                Explore three-dimensional geometry with interactive 3D models.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={() => openCalculator(selectedShape.name)} variant="outline" className="gap-2">
+                <Calculator className="w-4 h-4" />
+                Calculator
+              </Button>
+              <Button onClick={() => setShowQuiz(true)} className="gap-2">
+                <Brain className="w-4 h-4" />
+                Start Quiz
+              </Button>
+            </div>
+          </div>
+
+          <ProgressStats 
+            learnedCount={learnedCount} 
+            favoritesCount={favoritesCount} 
+            totalCount={shapes3D.length} 
+          />
         </motion.div>
 
-        {/* Controls */}
+        {/* Search and Filters */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex items-center gap-6 mb-8"
+          className="space-y-4 mb-8"
         >
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <RotateCcw className="w-4 h-4" />
-            <span>Drag to rotate • Scroll to zoom</span>
+          <SearchBar 
+            value={searchQuery} 
+            onChange={setSearchQuery} 
+            placeholder="Search 3D shapes..." 
+          />
+          
+          <div className="flex flex-wrap items-center gap-4 justify-center">
+            <div className="flex gap-2">
+              <Button
+                variant={filterMode === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterMode("all")}
+              >
+                All
+              </Button>
+              <Button
+                variant={filterMode === "learned" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterMode("learned")}
+              >
+                Learned
+              </Button>
+              <Button
+                variant={filterMode === "favorites" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterMode("favorites")}
+              >
+                Favorites
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-1 flex-wrap">
+              <Filter className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground mr-2">Category:</span>
+              <Button
+                variant={activeCategory === null ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setActiveCategory(null)}
+              >
+                All
+              </Button>
+              {categories3D.map((cat) => (
+                <Button
+                  key={cat.id}
+                  variant={activeCategory === cat.id ? "secondary" : "ghost"}
+                  size="sm"
+                  onClick={() => setActiveCategory(cat.id)}
+                >
+                  {cat.name}
+                </Button>
+              ))}
+            </div>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setWireframe(!wireframe)}
-            className="gap-2"
-          >
-            {wireframe ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            {wireframe ? "Solid" : "Wireframe"}
-          </Button>
+
+          {/* 3D Controls */}
+          <div className="flex items-center justify-center gap-6">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <RotateCcw className="w-4 h-4" />
+              <span>Drag to rotate • Scroll to zoom</span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setWireframe(!wireframe)}
+              className="gap-2"
+            >
+              {wireframe ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              {wireframe ? "Solid" : "Wireframe"}
+            </Button>
+          </div>
         </motion.div>
+
+        <QuizMode 
+          open={showQuiz} 
+          onOpenChange={setShowQuiz} 
+          items={quizItems} 
+          type="3d" 
+        />
+
+        <FormulaCalculator
+          open={showCalculator}
+          onOpenChange={setShowCalculator}
+          shapeName={calculatorShape}
+          shapeType="3d"
+        />
 
         {/* Main View */}
         <motion.div
@@ -686,19 +838,29 @@ const Shapes3D = () => {
             </div>
 
             <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <div 
-                  className="w-12 h-12 rounded-xl flex items-center justify-center"
-                  style={{ backgroundColor: selectedShape.color }}
-                >
-                  <Grid3X3 className="w-6 h-6 text-white" />
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-12 h-12 rounded-xl flex items-center justify-center"
+                    style={{ backgroundColor: selectedShape.color }}
+                  >
+                    <Grid3X3 className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-display font-bold">
+                      {selectedShape.name}
+                    </h2>
+                    <span className="text-sm text-muted-foreground capitalize">{selectedShape.category}</span>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-3xl font-display font-bold">
-                    {selectedShape.name}
-                  </h2>
-                  <span className="text-sm text-muted-foreground capitalize">{selectedShape.category}</span>
-                </div>
+                <ShapeActions
+                  isLearned={isLearned(`3d-${selectedShape.id}`)}
+                  isFavorite={isFavorite(`3d-${selectedShape.id}`)}
+                  onToggleLearned={() => toggleLearned(`3d-${selectedShape.id}`)}
+                  onToggleFavorite={() => toggleFavorite(`3d-${selectedShape.id}`)}
+                  showCalculator
+                  onOpenCalculator={() => openCalculator(selectedShape.name)}
+                />
               </div>
               <p className="text-lg text-muted-foreground">
                 {selectedShape.description}
@@ -825,26 +987,40 @@ const Shapes3D = () => {
           animate="show"
           className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
         >
-          {shapes3D.map((shape) => (
+          {filteredShapes.length === 0 ? (
+            <div className="col-span-full text-center py-12 text-muted-foreground">
+              No shapes found matching your criteria.
+            </div>
+          ) : filteredShapes.map((shape) => (
             <motion.button
               key={shape.id}
               variants={item}
               onClick={() => setSelectedShape(shape)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`aspect-square p-4 rounded-2xl border transition-all flex flex-col items-center justify-center gap-3 ${
+              className={`aspect-square p-3 rounded-2xl border transition-all flex flex-col items-center justify-center gap-2 relative ${
                 selectedShape.id === shape.id
                   ? "bg-primary/10 border-primary"
                   : "bg-card border-border hover:border-primary/50"
               }`}
             >
+              {(isLearned(`3d-${shape.id}`) || isFavorite(`3d-${shape.id}`)) && (
+                <div className="absolute top-1 right-1 flex gap-0.5">
+                  {isLearned(`3d-${shape.id}`) && (
+                    <span className="w-2 h-2 rounded-full bg-success" />
+                  )}
+                  {isFavorite(`3d-${shape.id}`) && (
+                    <span className="w-2 h-2 rounded-full bg-yellow-500" />
+                  )}
+                </div>
+              )}
               <div 
-                className="w-12 h-12 rounded-xl flex items-center justify-center text-white"
+                className="w-10 h-10 rounded-xl flex items-center justify-center text-white"
                 style={{ backgroundColor: shape.color }}
               >
-                <Grid3X3 className="w-6 h-6" />
+                <Grid3X3 className="w-5 h-5" />
               </div>
-              <span className="text-sm font-medium truncate max-w-full">
+              <span className="text-xs font-medium truncate max-w-full">
                 {shape.name}
               </span>
             </motion.button>
